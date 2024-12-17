@@ -5,7 +5,7 @@ Tags:    troubleshoot, conflicts, debug, support, administration, site health, p
 Requires at least: 6.1
 Tested up to:      6.7
 Requires PHP:      5.3
-Stable tag:        1.2.24
+Stable tag:        1.2.25
 License:           GPLv2
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -13,9 +13,14 @@ License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
 **Plugin Detective helps you troubleshoot issues on your site quickly and easily to find the cause of a problem.** Once the culprit is found, the problem plugin can be quickly deactivated. You can even fix your site when it has the white screen of death (fatal error). You'll want to have Plugin Detective installed, so if your site crashes from a conflict or bad plugin update, you can get it back up and running quickly!
 
+Plugin Detective is your best friend when you need to:
+- Troubleshoot WordPress plugin conflicts
+- Remove stuck .maintenance files
+- Recover your site from fatal errors caused by plugins
+
 ---
 
-We've all been there - something's broken on your site. You've looked around the web for advice about what to do and have stumbled across the typical wisdom - deactivate all your plugins and then re-activate them one-by-one, checking your site for the problem after each reactivation.
+We've all been there--something's broken on your site. You've looked around the web for advice about what to do and have stumbled across the typical wisdom: deactivate all your plugins and then reactivate them one by one, checking your site for the problem after each reactivation.
 
 Ugh.
 
@@ -27,13 +32,26 @@ Sure, it works. But who has *time* for that?
 
 Detective Otto Bot walks you through solving your case one step at a time, all from one single screen.
 
-Just open up a case and tell Detective Otto where you're seeing the problem. If there are any plugins that are required for your site to run correctly, tell Otto about those too.
+1. Open a case and tell Detective Otto where you're seeing the problem. If your site requires any plugins to run correctly, tell Otto about those, too.
+2. Then, Otto will interrogate the suspects and track clues, checking in with you from time to time.
+3. All you need to do is answer "Yes, it's fixed" or "No, it's still broken" each time. Otto will do the rest and find the culprit in minutes.
 
-Then Otto will interrogate the suspects and keep track of clues, checking in with you from time to time. All you need to do is answer "Yes, it's fixed" or "No, it's still broken" each time. Otto does the rest and finds the culprit in just minutes.
-
-Best of all - Plugin Detective can work even if you're just seeing the White Screen of Death on your site or if all you can see are PHP errors. See the FAQ's for how to access plugin detective and log into WordPress even if you can't get to your login screen.
+Best of all - Plugin Detective can work even if you're seeing the White Screen of Death on your site or if all you can see are PHP errors. Please have a look at the FAQ's for how to access Plugin Detective and log into WordPress even if you can't get to your login screen.
 
 Once Otto has identified the culprit, you can quickly deactivate the troublesome plugin and go about your day.
+
+= Remove Stuck .Maintenance File or Scheduled Maintenance =
+Have you gotten stuck in maintenance mode on WordPress? The dreaded "Briefly unavailable for scheduled maintenance. Check back in a minute" message haunts you; the minute never ends!
+
+With Plugin Detective installed you can quickly get out of these situations without the hassle of deleting files via your host or FTP. Just tack on this slug to the end of your website URL:
+
+`/wp-content/plugins/plugin-detective/troubleshoot/?restore=1`
+
+So that your URL looks like this:
+
+`https://yoursite.com/wp-content/plugins/plugin-detective/troubleshoot/?restore=1`
+
+This will prompt you to log in and automatically remove that stuck maintenance file for you.
 
 = Who Can Use This Troubleshooting Tool? =
 
@@ -65,21 +83,21 @@ Plugin Detective makes it easy for their clients to debug performance issues and
 
 = How do I use Plugin Detective? =
 
-Install Plugin Detective. Then from the WordPress admin, you'll find Plugin Detective under the Tools menu.
+Install Plugin Detective. Then, from the WordPress admin, you'll find Plugin Detective under the Tools menu.
 
 Alternatively, you'll find a Troubleshoot link added to your admin bar. Click this link on any page, admin or front end, to troubleshoot an issue you're seeing on that page.
 
-= I just see errors or a white screen. Can I still use Plugin Detective to troubleshoot what's gone wrong? =
+= I see errors or a white screen. Can I still use Plugin Detective to troubleshoot what's gone wrong? =
 
-As long as you can still access your hosting account, you can install Plugin Detective via FTP. We've included instructions for Manual Installation on the Installation tab.
+You can install Plugin Detective via FTP as long as you can still access your hosting account. On the Installation tab, we've included instructions for Manual Installation.
 
-Once Plugin Detective is installed, head to `yoursite.com/wp-content/plugins/plugin-detective/troubleshoot`. You'll be asked to log in with your WordPress username and password just to make sure you have the right permissions and then Detective Otto Bot will step you through troubleshooting just like always.
+Once Plugin Detective is installed, head to `yoursite.com/wp-content/plugins/plugin-detective/troubleshoot`. You'll be asked to log in with your WordPress username and password to make sure you have the right permissions, and then Detective Otto Bot will step you through troubleshooting just like always.
 
 = How does Detective Otto figure out which plugin is breaking my site? =
 
 Detective Otto learns from you. While interrogating the different suspects, Otto will check in with you to see if the issue is still happening on your site or not. You just need to answer "Fixed" or "Broken" after Otto makes a change.
 
-Each of your answers provides Otto another clue that he is able to use to narrow down the list of plugins to find just the one that's causing the problem.
+Each of your answers provides Otto with another clue that he can use to narrow down the list of plugins to find the one causing the problem.
 
 = What if it's not easy to see what's broken? =
 
@@ -87,19 +105,19 @@ There's no time limit on the clues for Otto. Some issues are more complex than o
 
 = Is this faster than me troubleshooting my plugins manually? =
 
-Yes, it's *much* faster. Robots can be really fast at figuring out puzzles like these, and Detective Otto Bot is no exception. Rather than disabling your plugins one-by-one, Otto can disable groups of plugins, and use your answers to quickly narrow the scope of his investigation using binary search (a fancy robot term for saving you time).
+Yes, it's *much* faster. Robots can be really fast at figuring out puzzles like these, and Detective Otto Bot is no exception. Rather than disabling your plugins one by one, Otto can disable groups of plugins and use your answers to quickly narrow the scope of his investigation using binary search (a fancy robot term for saving you time).
 
 = I told Detective Otto that the problem was fixed, so why is he still interrogating suspects? =
 
-Likely Otto was interrogating a group of suspects at the time. The clue that the problem was fixed only narrows it down to the suspect being in that group. Give Otto a couple more rounds of interrogation, and he'll find the exact plugin that's causing your problem.
+Otto was likely interrogating a group of suspects at the time. The clue that the problem was fixed only narrows it down to one suspect in that group. Give Otto a couple more rounds of interrogation, and he'll find the exact plugin causing your problem.
 
 = Does Plugin Detective work on multisite installs? =
 
 No, we don't support multisite yet. We wanted to get Plugin Detective out there for people to use as soon as possible, but there’s a good amount of work to do before it will support multisite. As you may know, multisite can get a bit complicated.
 
-With a single install, it’s easy to determine which plugins are active and manipulate them. With a multisite, there are network-activated plugins and plugins at the site level. And theoretically Plugin Detective could be run the whole network, or just looking at a single site. And there are permission differences between a network admin and a site admin. So it will take some work for us to support all that. We want to see how much interest there is in supporting multisite, and get some feedback from multisite users to understand what would be most useful for them and how they’d use it.
+With a single install, it’s easy to determine which plugins are active and manipulate them. With a multisite, there are network-activated plugins and plugins at the site level. And theoretically, Plugin Detective could run the whole network or just look at a single site. And there are permission differences between a network admin and a site admin. So it will take some work for us to support all that. We want to see how much interest there is in supporting multisite, and get some feedback from multisite users to understand what would be most useful for them and how they’d use it.
 
-If you're reading this, you likely want to use Plugin Detective to troubleshoot multisite installs. Please send us an email (support@tylerdigital.com) to let us know you're interested and answer a few questions to help us build this the right way:
+If you're reading this, you likely want to use Plugin Detective to troubleshoot multisite installs. Please send us an email (team@nsquared.io) to let us know you're interested and answer a few questions to help us build this the right way:
 
 Would this just be a tool for you (the network admin)? Or would you want your site admins to be able to run it (and I assume they could only test their site-activated plugins, not disable any that you’ve network-activated?)
 
