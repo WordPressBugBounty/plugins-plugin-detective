@@ -1,11 +1,11 @@
 === Plugin Detective - Troubleshooting Conflicts ===
-Contributors:      croixhaug, nataliemac
+Contributors:      croixhaug, nataliemac, nsquaredteam
 Donate link:       https://nsquared.io
 Tags:    troubleshoot, conflicts, debug, support, administration, site health, performance, error, developer, troubleshooting, development, health check
 Requires at least: 6.1
-Tested up to:      6.7
+Tested up to:      6.8
 Requires PHP:      5.3
-Stable tag:        1.2.25
+Stable tag:        1.2.26
 License:           GPLv2
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 
