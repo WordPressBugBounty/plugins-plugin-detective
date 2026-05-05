@@ -117,6 +117,7 @@ class PDT_Constants {
 		$config_files = array(
 			dirname( $wp_config_dir_path ) . '/wp-config-local.php',
 			dirname( $wp_config_dir_path ) . '/wp-config-hosting.php',
+			dirname( $wp_config_dir_path ) . '/wp-config-ddev.php',
 			$wp_config_dir_path,
 		);
 		$attempts = array(
@@ -232,9 +233,24 @@ define( 'DB_HOST', 'localhost' );
 			define( 'WP_CONTENT_URL', $WP_CONTENT_URL );
 		}
 
-		$config_file->set_type( 'php-variable' );
+		// Search every config file for $table_prefix, not just whichever one
+		// was last assigned by the DB_* loop above. Split-config layouts
+		// (DDEV, LocalWP, etc.) place credentials and $table_prefix in
+		// different files.
 		global $table_prefix;
-		$table_prefix = $config_file->get_key( 'table_prefix' );
+		$table_prefix = '';
+		foreach ( $config_files as $config_file_path ) {
+			if ( ! file_exists( $config_file_path ) ) {
+				continue;
+			}
+			$config_file = new PDT_Config( $config_file_path );
+			$config_file->set_type( 'php-variable' );
+			$value = $config_file->get_key( 'table_prefix' );
+			if ( ! empty( $value ) ) {
+				$table_prefix = $value;
+				break;
+			}
+		}
 		$GLOBALS['table_prefix'] = $table_prefix;
 
 		if ( !defined('WP_CONTENT_DIR') )
