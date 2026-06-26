@@ -33,7 +33,7 @@ final class PD_Troubleshoot {
 	 * @var    string
 	 * @since  0.0.0
 	 */
-	const VERSION = '1.2.30';
+	const VERSION = '1.2.31';
 
 	/**
 	 * URL of plugin directory.
@@ -160,7 +160,8 @@ final class PD_Troubleshoot {
 			} elseif ( !empty( $_SERVER['HTTP_X_FORWARDED_PROTO'] ) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https' ) {
 				$desired_protocol = 'https';
 			} elseif ( !empty( $_SERVER['protocol'] ) ) {
-				$desired_protocol = strtolower( substr( $_SERVER["SERVER_PROTOCOL"], 0, 5 ) ) == 'https' ? 'https' : 'http';
+				$server_protocol = isset( $_SERVER['SERVER_PROTOCOL'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) : '';
+				$desired_protocol = strtolower( substr( $server_protocol, 0, 5 ) ) == 'https' ? 'https' : 'http';
 			}
 		}
 
@@ -176,7 +177,8 @@ final class PD_Troubleshoot {
 		}
 
 		if ( $should_be_www === null ) {
-			if ( strpos( $_SERVER['HTTP_HOST'], 'www.' ) === 0 ) {
+			$http_host = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
+			if ( strpos( $http_host, 'www.' ) === 0 ) {
 				$should_be_www = true;
 			} else {
 				$should_be_www = false;
@@ -266,6 +268,7 @@ final class PD_Troubleshoot {
 		}
 
 		// Load translated strings for plugin.
+		// phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- Standalone troubleshooter bootstrap; WordPress's automatic just-in-time textdomain loading does not run in this context.
 		load_plugin_textdomain( 'plugin-detective', false, dirname( $this->basename ) . '/languages/' );
 
 
@@ -334,7 +337,8 @@ final class PD_Troubleshoot {
 	public function requirements_not_met_notice() {
 
 		// Compile default message.
-		$default_message = sprintf( __( 'Troubleshoot is missing requirements and has been <a href="%s">deactivated</a>. Please make sure all requirements are available.', 'troubleshoot' ), admin_url( 'plugins.php' ) );
+		/* translators: %s: URL of the WordPress plugins admin page. */
+		$default_message = sprintf( __( 'Troubleshoot is missing requirements and has been <a href="%s">deactivated</a>. Please make sure all requirements are available.', 'plugin-detective' ), admin_url( 'plugins.php' ) );
 
 		// Default details to null.
 		$details = null;
@@ -381,7 +385,7 @@ final class PD_Troubleshoot {
 			case 'detective':
 				return $this->$field;
 			default:
-				throw new Exception( 'Invalid ' . __CLASS__ . ' property: ' . $field );
+				throw new Exception( 'Invalid ' . __CLASS__ . ' property: ' . esc_html( $field ) );
 		}
 	}
 
@@ -443,8 +447,9 @@ final class PD_Troubleshoot {
 		if (is_user_logged_in() && current_user_can('manage_options')) {
 			// remove .maintenance file
 			$filename = ABSPATH . '.maintenance';
-			if (file_exists($filename)) {
-				return unlink($filename);
+			if ( file_exists( $filename ) ) {
+				wp_delete_file( $filename );
+				return ! file_exists( $filename );
 			}
 		}
 		return false;

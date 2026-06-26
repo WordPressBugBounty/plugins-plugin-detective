@@ -1,4 +1,6 @@
-<?php $translations = array (
+<?php
+defined( 'ABSPATH' ) || exit;
+$translations = array (
   'general' => 
   array (
     'backToWp' => __( 'Back to WordPress', 'plugin-detective' ),

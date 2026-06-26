@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 function pd_maybe_require( $path ) {
 	if ( file_exists( $path ) ) {
 		require_once $path;
@@ -134,8 +138,8 @@ if ( function_exists( 'wp_register_fatal_error_handler' ) ) {
 wp_check_php_mysql_versions();
 
 // Disable magic quotes at runtime. Magic quotes are added using wpdb later in wp-settings.php.
-@ini_set( 'magic_quotes_runtime', 0 );
-@ini_set( 'magic_quotes_sybase',  0 );
+@ini_set( 'magic_quotes_runtime', 0 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Vendored WordPress core loader (wp-settings.php).
+@ini_set( 'magic_quotes_sybase',  0 ); // phpcs:ignore Squiz.PHP.DiscouragedFunctions.Discouraged -- Vendored WordPress core loader (wp-settings.php).
 
 // WordPress calculates offsets from UTC.
 // phpcs:ignore WordPress.DateTime.RestrictedFunctions.timezone_change_date_default_timezone_set

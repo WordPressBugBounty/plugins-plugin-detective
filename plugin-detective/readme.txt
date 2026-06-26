@@ -1,13 +1,15 @@
 === Plugin Detective - Troubleshooting Conflicts ===
 Contributors:      croixhaug, nataliemac, nsquaredteam
 Donate link:       https://nsquared.io
-Tags:    troubleshoot, conflicts, debug, support, administration, site health, performance, error, developer, troubleshooting, development, health check
+Tags:    troubleshoot, conflicts, debug, performance, site health
 Requires at least: 6.1
 Tested up to:      7.0
 Requires PHP:      5.3
-Stable tag:        1.2.30
+Stable tag:        1.2.31
 License:           GPLv2
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
+
+Quickly find and fix WordPress plugin conflicts, recover from fatal errors, and clear stuck maintenance mode without any coding.
 
 == Description ==
 

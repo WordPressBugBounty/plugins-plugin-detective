@@ -76,11 +76,11 @@ class PDT_Constants {
 			if ( !defined( 'ABSPATH' ) ) {
 				echo '<p>It\'s possible you have an unusual directory structure, and we can\'t find the path to the root of your WordPress install.'.'</p>';
 				echo '<p>You can tell Plugin Detective about your install by creating a config file here:</p>';
-				echo '<pre>'. $path_to_pd_config .'</pre>';
+				echo '<pre>'. esc_html( $path_to_pd_config ) .'</pre>';
 				echo '<p>where you define the path to your WP install</p>';
 				echo '<code>'. "define( 'ABSPATH', '/path/to/wordpress/install/' );" .'</code>';
 				echo '<p>You may want to define other customized values like <code>WP_CONTENT_DIR</code>, <code>WP_CONTENT_URL</code> or other values from your wp-config.php file that are unique to your install</p>';
-				echo '<p>Error details: <code>Couldn\'t find ABSPATH from plugin path: ' . $this->plugin->dir() . '</code></p>';
+				echo '<p>Error details: <code>Couldn\'t find ABSPATH from plugin path: ' . esc_html( $this->plugin->dir() ) . '</code></p>';
 				echo '<style>code { color: #333; background-color: #ccc; padding: 5px; }</style>';
 				exit();
 			}
@@ -95,13 +95,14 @@ class PDT_Constants {
 				$wp_config_dir_path = ABSPATH . 'wp' . '/' . 'wp-config.php';
 
 				if ( ! @file_exists( $wp_config_dir_path ) ) {
-					die( "Unable to locate wp-config.php file: \n" . ABSPATH. 'wp-config.php' . "\n OR \n" . dirname( ABSPATH ) . '/' . 'wp-config.php' );
+					die( esc_html( "Unable to locate wp-config.php file: \n" . ABSPATH . 'wp-config.php' . "\n OR \n" . dirname( ABSPATH ) . '/' . 'wp-config.php' ) );
 				}
 			}
 		}
 
 
 		if ( isset($_ENV['PANTHEON_ENVIRONMENT']) ) {
+			// phpcs:disable WordPress.Security.ValidatedSanitizedInput -- Reading platform-provided database credentials from the Pantheon environment, not user input.
 			define('DB_NAME', $_ENV['DB_NAME']);
 
 			/** MySQL database username */
@@ -112,6 +113,7 @@ class PDT_Constants {
 
 			/** MySQL hostname; on Pantheon this includes a specific port number. */
 			define('DB_HOST', $_ENV['DB_HOST'] . ':' . $_ENV['DB_PORT']);
+			// phpcs:enable WordPress.Security.ValidatedSanitizedInput
 		}
 
 		$config_files = array(
@@ -301,7 +303,7 @@ define( 'DB_HOST', 'localhost' );
 		 * @deprecated
 		 */
 		if ( !defined('PLUGINDIR') )
-			define( 'PLUGINDIR', 'wp-content/plugins' ); // Relative to ABSPATH. For back compat.
+			define( 'PLUGINDIR', 'wp-content/plugins' ); // phpcs:ignore WordPress.WP.DiscouragedConstants.PLUGINDIRDeclarationFound -- Standalone bootstrap mirrors wp-settings.php and re-creates this back-compat core constant.
 
 		/**
 		 * Allows for the mu-plugins directory to be moved from the default location.
@@ -318,7 +320,7 @@ define( 'DB_HOST', 'localhost' );
 		 * @deprecated
 		 */
 		if ( !defined( 'MUPLUGINDIR' ) )
-			define( 'MUPLUGINDIR', 'wp-content/mu-plugins' ); // Relative to ABSPATH. For back compat.
+			define( 'MUPLUGINDIR', 'wp-content/mu-plugins' ); // phpcs:ignore WordPress.WP.DiscouragedConstants.MUPLUGINDIRDeclarationFound -- Standalone bootstrap mirrors wp-settings.php and re-creates this back-compat core constant.
 
 		
 	}

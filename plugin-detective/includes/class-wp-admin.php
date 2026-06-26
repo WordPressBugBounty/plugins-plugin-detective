@@ -79,7 +79,7 @@ class PD_Wp_Admin {
 	}
 
 	public function render_tools_page() {
-		wp_redirect( $this->get_app_url() );
+		wp_safe_redirect( $this->get_app_url() );
 		exit();
 	}
 
@@ -95,6 +95,7 @@ class PD_Wp_Admin {
 	}
 
 	public function redirect_tools_page() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only routing check on admin_init; no state change.
 		if ( empty( $_GET['page'] ) || $_GET['page'] !== 'plugin-detective' ) {
 			return;
 		}
@@ -103,17 +104,17 @@ class PD_Wp_Admin {
 			if ( !empty( $itsec_storage['system-tweaks']['plugins_php'] ) ) {
 				echo '<h1>iThemes Security is preventing Plugin Detective from operating properly</h1>';
 				echo '<h3>To fix this: <code>Go to Security > Settings > System Tweaks</code> and <strong>uncheck</strong> the checkbox setting for <code>Disable PHP in Plugins</code></h3>';
-				echo '<h3><a href="'. admin_url( 'admin.php?page=itsec&module=system-tweaks&module_type=recommended' ).'">Go there now</a></h3>';
+				echo '<h3><a href="'. esc_url( admin_url( 'admin.php?page=itsec&module=system-tweaks&module_type=recommended' ) ).'">Go there now</a></h3>';
 				exit();
 			}
 		}
 
 		$troubleshoot_url = '';
-		if ( !empty( $_GET['url'] ) ) {
-			$troubleshoot_url = sanitize_text_field( $_GET['url'] );
+		if ( ! empty( $_GET['url'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect parameter; no state change.
+			$troubleshoot_url = sanitize_text_field( wp_unslash( $_GET['url'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only redirect parameter.
 		}
 
-		wp_redirect( $this->get_app_url( $troubleshoot_url ) );
+		wp_safe_redirect( $this->get_app_url( $troubleshoot_url ) );
 		exit();
 	}
 
@@ -124,9 +125,9 @@ class PD_Wp_Admin {
 		global $wp_admin_bar;
 
 		$current_url = '';
-		if ( !empty( $_SERVER['REQUEST_URI'] ) ) {
-			$desired_relative_path = (string)$_SERVER['REQUEST_URI'];
-			$relative_path_to_wp_directory = (string)parse_url( site_url(), PHP_URL_PATH );
+		if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
+			$desired_relative_path = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+			$relative_path_to_wp_directory = (string) wp_parse_url( site_url(), PHP_URL_PATH );
 
 			if ( ! empty( $relative_path_to_wp_directory ) && strpos( $desired_relative_path, $relative_path_to_wp_directory ) === 0 ) {
 				$desired_relative_path = substr( $desired_relative_path, strlen( $relative_path_to_wp_directory ) );
@@ -145,7 +146,7 @@ class PD_Wp_Admin {
 			) );
 		}
 
-		wp_enqueue_style( 'plugin_detective', $this->plugin->url( 'assets/admin.css' ) );
+		wp_enqueue_style( 'plugin_detective', $this->plugin->url( 'assets/admin.css' ), array(), $this->plugin->version );
 	}
 
 }

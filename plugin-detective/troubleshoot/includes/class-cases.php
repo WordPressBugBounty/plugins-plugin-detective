@@ -236,7 +236,8 @@ class PDT_Cases {
 		}
 
 		if ( empty( $active_case ) ) {
-			return new WP_Error( 'case_data_missing' , __( 'Case ID '.$active_case_id.' missing', 'plugin-detective' ) );
+			/* translators: %s: case ID. */
+			return new WP_Error( 'case_data_missing', sprintf( __( 'Case ID %s missing', 'plugin-detective' ), $active_case_id ) );
 		}
 
 		return $active_case;
@@ -249,7 +250,8 @@ class PDT_Cases {
 
 		$case = get_option( 'pdt_case_' . esc_attr( $args['id'] ) );
 		if ( empty( $case ) ) {
-			return new WP_Error( 'case_data_missing' , __( 'Case ID '.$args['id'].' missing', 'plugin-detective' ) );
+			/* translators: %s: case ID. */
+			return new WP_Error( 'case_data_missing', sprintf( __( 'Case ID %s missing', 'plugin-detective' ), $args['id'] ) );
 		}
 
 		return json_decode( $case, true );

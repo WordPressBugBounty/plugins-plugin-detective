@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Plugin Detective - Troubleshooting
+ * Plugin Name: Plugin Detective - Troubleshooting Conflicts
  * Plugin URI:  https://nsquared.io
  * Description: Quickly troubleshoot & fix plugin conflicts
- * Version:     1.2.30
+ * Version:     1.2.31
  * Author:      NSquared
  * Donate link: https://nsquared.io
  * License:     GPLv2
@@ -13,7 +13,7 @@
  * @link    https://nsquared.io
  *
  * @package Plugin_Detective
- * @version 1.2.30
+ * @version 1.2.31
  *
  * Built using generator-plugin-wp (https://github.com/WebDevStudios/generator-plugin-wp)
  */
@@ -36,6 +36,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+// Prevent direct access to this file.
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Autoloads files with classes when needed.
@@ -71,7 +73,7 @@ final class Plugin_Detective {
 	 * @var    string
 	 * @since  0.0.0
 	 */
-	const VERSION = '1.2.30';
+	const VERSION = '1.2.31';
 
 	/**
 	 * wp admin instance class
@@ -205,9 +207,6 @@ final class Plugin_Detective {
 			return;
 		}
 
-		// Load translated strings for plugin.
-		load_plugin_textdomain( 'plugin-detective', false, dirname( $this->basename ) . '/languages/' );
-
 		// Initialize plugin classes.
 		$this->plugin_classes();
 	}
@@ -292,6 +291,7 @@ Or would you want your site admins to be able to run it (and I assume they could
 	public function requirements_not_met_notice() {
 
 		// Compile default message.
+		/* translators: %s: URL of the WordPress plugins admin page. */
 		$default_message = sprintf( __( 'Plugin Detective is missing requirements and has been <a href="%s">deactivated</a>. Please make sure all requirements are available.', 'plugin-detective' ), admin_url( 'plugins.php' ) );
 
 		// Default details to null.
@@ -330,7 +330,7 @@ Or would you want your site admins to be able to run it (and I assume they could
 			case 'wp_admin':
 				return $this->$field;
 			default:
-				throw new Exception( 'Invalid ' . __CLASS__ . ' property: ' . $field );
+				throw new Exception( 'Invalid ' . __CLASS__ . ' property: ' . esc_html( $field ) );
 		}
 	}
 

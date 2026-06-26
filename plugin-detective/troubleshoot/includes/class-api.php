@@ -116,8 +116,8 @@ class PDT_Api {
 	public function process_input() {
 		$this->request = array();
 
-		if ( !empty( $_REQUEST ) ) {
-			$this->request = $_REQUEST;
+		if ( ! empty( $_REQUEST ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Custom troubleshooter API authenticated via PDT_Auth nonce; runs standalone when the WP REST API is unavailable.
+			$this->request = $_REQUEST; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- See above; params validated downstream in process_params().
 		}
 
 		$json = file_get_contents("php://input");
@@ -164,22 +164,14 @@ class PDT_Api {
 
 		// Authentication Request
 		if ( $this->params['action'] == 'authenticate' ) {
-			$auth_response = $this->plugin->auth->get_nonce( $this->params['username'], $this->params['password'], 'pd_api' );
+			$user = $this->plugin->auth->authenticate( $this->params['username'], $this->params['password'] );
 
-			if ( is_a( $auth_response, 'WP_Error' ) ) {
-				$this->errors['authentication'] = array_keys( $auth_response->errors );
-				$this->errors['authentication'] = $this->errors['authentication']['0'];
+			if ( is_a( $user, 'WP_Error' ) ) {
+				// Single, fixed error code for every failure mode — never echo a
+				// code that distinguishes a valid username from an invalid one.
+				$this->errors['authentication'] = $user->get_error_code();
 			} else {
-				$this->data['nonce'] = $auth_response;
-			}
-
-			$user_response = $this->plugin->auth->get_user( $this->params['username'], $this->params['password'], 'pd_api' );
-
-			if ( is_a( $user_response, 'WP_Error' ) ) {
-				$this->errors['authentication'] = array_keys( $user_response->errors );
-				$this->errors['authentication'] = $this->errors['authentication']['0'];
-			} else {
-				$this->data['user'] = $user_response;
+				$this->data['nonce'] = $this->plugin->auth->create_nonce( 'pd_api' );
 			}
 
 			$this->return_response();

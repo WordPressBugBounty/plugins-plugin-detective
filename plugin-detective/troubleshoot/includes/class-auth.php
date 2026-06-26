@@ -42,51 +42,39 @@ class PDT_Auth {
 
 	}
 
-	public static function get_user( $username, $password, $action ) {
-		$username = sanitize_user($username);
-		$password = trim($password);
+	/**
+	 * Authenticate a username/password and require plugin-management capability.
+	 *
+	 * Every failure mode — unknown username, wrong password, or a valid login
+	 * that lacks the activate_plugins capability — returns the SAME generic
+	 * error. Distinct codes/messages here would let an unauthenticated caller
+	 * probe which usernames exist (user enumeration), so they are deliberately
+	 * collapsed into one indistinguishable response.
+	 *
+	 * @since  0.0.0
+	 *
+	 * @param  string $username Raw username input.
+	 * @param  string $password Raw password input.
+	 * @return WP_User|WP_Error Plugin-capable user on success, or one generic error.
+	 */
+	public static function authenticate( $username, $password ) {
+		$username = sanitize_user( $username );
+		$password = trim( $password );
 
 		$user = apply_filters( 'authenticate', null, $username, $password );
-		if ( $user == null ) {
-			$user = new WP_Error( 'authentication_failed', __( '<strong>ERROR</strong>: Invalid username, email address or incorrect password.', 'plugin-detective' ) );
-		}
-		if ( is_a( $user, 'WP_Error' ) ) {
-			return $user;
+
+		if ( ! is_a( $user, 'WP_User' ) || ! user_can( $user, 'activate_plugins' ) ) {
+			return new WP_Error( 'authentication_failed', __( '<strong>ERROR</strong>: Authentication failed.', 'plugin-detective' ) );
 		}
 
-		if ( !user_can( $user, 'activate_plugins' ) ) {
-			return new WP_Error( 'permission_denied', __( '<strong>ERROR</strong>: This user does not have permission to activate/deactivate plugins', 'plugin-detective' ) );
-		}
-
-		// $slug = sanitize_title( $username.sha1( DB_PASSWORD . $password ).$action );
-		return $user->data;
-	}
-
-	public static function get_nonce( $username, $password, $action ) {
-		$username = sanitize_user($username);
-		$password = trim($password);
-
-		$user = apply_filters( 'authenticate', null, $username, $password );
-		if ( $user == null ) {
-			$user = new WP_Error( 'authentication_failed', __( '<strong>ERROR</strong>: Invalid username, email address or incorrect password.', 'plugin-detective' ) );
-		}
-		if ( is_a( $user, 'WP_Error' ) ) {
-			return $user;
-		}
-
-		if ( !user_can( $user, 'activate_plugins' ) ) {
-			return new WP_Error( 'permission_denied', __( '<strong>ERROR</strong>: This user does not have permission to activate/deactivate plugins', 'plugin-detective' ) );
-		}
-
-		// $slug = sanitize_title( $username.sha1( DB_PASSWORD . $password ).$action );
-		return self::create_nonce( $action );
+		return $user;
 	}
 
 	public static function create_nonce( $action ) {
 		$uid = 'api';
 
-		if ( !empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
-			$token = $_SERVER['HTTP_USER_AGENT'];
+		if ( ! empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
+			$token = sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) );
 		} else {
 			$token = '';
 		}
@@ -98,8 +86,8 @@ class PDT_Auth {
 	public static function verify_nonce( $nonce, $action ) {
 		$nonce = (string) $nonce;
 		$uid = 'api';
-		if ( !empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
-			$token = $_SERVER['HTTP_USER_AGENT'];
+		if ( ! empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
+			$token = sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) );
 		} else {
 			$token = '';
 		}
