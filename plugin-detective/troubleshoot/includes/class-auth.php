@@ -70,8 +70,11 @@ class PDT_Auth {
 		return $user;
 	}
 
-	public static function create_nonce( $action ) {
-		$uid = 'api';
+	public static function create_nonce( $action, $uid = null ) {
+		if ( null === $uid ) {
+			$uid = get_current_user_id();
+		}
+		$uid = (int) $uid;
 
 		if ( ! empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
 			$token = sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) );
@@ -80,34 +83,46 @@ class PDT_Auth {
 		}
 		$i = strtotime( gmdate( 'Y-m-d' ) );
 
-		return substr( sha1( DB_PASSWORD . $i . '|' . $action . '|' . $uid . '|' . $token  ), -12, 10 );	
+		// Bind the token to the user it was issued for so a low-privileged user's
+		// nonce can never stand in for an administrator's. The uid travels with the
+		// token (the app treats it as opaque) and is re-verified on each request.
+		return $uid . ':' . substr( sha1( DB_PASSWORD . $i . '|' . $action . '|' . $uid . '|' . $token  ), -12, 10 );
 	}
 
 	public static function verify_nonce( $nonce, $action ) {
 		$nonce = (string) $nonce;
-		$uid = 'api';
+		if ( empty( $nonce ) ) {
+			return false;
+		}
+
+		// Tokens are "<uid>:<hash>" — recover the uid so the hash is checked against
+		// the user it was minted for. Returns that uid on success for the caller's
+		// capability re-check; false otherwise.
+		$parts = explode( ':', $nonce, 2 );
+		if ( count( $parts ) !== 2 || '' === $parts[1] ) {
+			return false;
+		}
+		$uid = (int) $parts[0];
+		$provided = $parts[1];
+
 		if ( ! empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
 			$token = sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) );
 		} else {
 			$token = '';
-		}
-
-		if ( empty( $nonce ) ) {
-			return false;
 		}
 
 		$i = strtotime( gmdate( 'Y-m-d' ) );
 
 		// Nonce generated today (gmt)
 		$expected = substr( sha1( DB_PASSWORD . $i . '|' . $action . '|' . $uid . '|' . $token ), -12, 10 );
-		if ( hash_equals( $expected, $nonce ) ) {
-			return 1;
+		if ( hash_equals( $expected, $provided ) ) {
+			return $uid;
 		}
 
 		// Nonce generated yesterday (gmt)
 		$expected = substr( sha1( DB_PASSWORD . ( $i - 24*60*60 ) . '|' . $action . '|' . $uid . '|' . $token  ), -12, 10 );
-		if ( hash_equals( $expected, $nonce ) ) {
-			return 2;
+		if ( hash_equals( $expected, $provided ) ) {
+			return $uid;
 		}
 
 		// Invalid nonce

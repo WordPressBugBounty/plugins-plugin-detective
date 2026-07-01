@@ -99,7 +99,15 @@ class PD_Wp_Admin {
 		if ( empty( $_GET['page'] ) || $_GET['page'] !== 'plugin-detective' ) {
 			return;
 		}
-		
+
+		// Defense in depth: this handler mints an authenticated pd_api token, so gate
+		// it on the same capability the API enforces. WordPress's admin-menu access
+		// check already blocks low-privileged users from this page, but don't rely on
+		// that ordering — never mint a token for a user who couldn't use it anyway.
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+			return;
+		}
+
 		if ( class_exists( 'ITSEC_Core' ) && $itsec_storage = get_option( 'itsec-storage' ) ) {
 			if ( !empty( $itsec_storage['system-tweaks']['plugins_php'] ) ) {
 				echo '<h1>iThemes Security is preventing Plugin Detective from operating properly</h1>';

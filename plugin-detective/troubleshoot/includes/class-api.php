@@ -171,7 +171,7 @@ class PDT_Api {
 				// code that distinguishes a valid username from an invalid one.
 				$this->errors['authentication'] = $user->get_error_code();
 			} else {
-				$this->data['nonce'] = $this->plugin->auth->create_nonce( 'pd_api' );
+				$this->data['nonce'] = $this->plugin->auth->create_nonce( 'pd_api', $user->ID );
 			}
 
 			$this->return_response();
@@ -184,8 +184,17 @@ class PDT_Api {
 			$this->return_response();
 		}
 
-		if ( ! $this->plugin->auth->verify_nonce( $this->params['nonce'], 'pd_api' ) ) {
+		$nonce_user_id = $this->plugin->auth->verify_nonce( $this->params['nonce'], 'pd_api' );
+		if ( empty( $nonce_user_id ) ) {
 			$this->errors['nonce'] = 'Invalid';
+			$this->return_response();
+		}
+
+		// The nonce is bound to the user it was issued for. Re-check that user still
+		// has plugin-management rights so a token can never authorize more than its
+		// owner, even if it leaks or the user's role is later downgraded.
+		if ( ! user_can( $nonce_user_id, 'activate_plugins' ) ) {
+			$this->errors['permission'] = 'You do not have permission to perform this action';
 			$this->return_response();
 		}
 
