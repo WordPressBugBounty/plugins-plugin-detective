@@ -33,7 +33,7 @@ final class PD_Troubleshoot {
 	 * @var    string
 	 * @since  0.0.0
 	 */
-	const VERSION = '1.2.32';
+	const VERSION = '1.2.33';
 
 	/**
 	 * URL of plugin directory.
