@@ -258,18 +258,11 @@ define( 'DB_HOST', 'localhost' );
 		if ( !defined('WP_CONTENT_DIR') )
 			define( 'WP_CONTENT_DIR', ABSPATH . 'wp-content' ); // no trailing slash, full paths only - WP_CONTENT_URL is defined further down
 
-		// Add define('WP_DEBUG', true); to wp-config.php to enable display of notices during development.
+		// Keep WP_DEBUG off unless plugin-detective-config.php turns it on. Core's own default turns it on in
+		// development environments, and the hand-built loader in class-settings.php breaks in debug mode.
+		// WP_DEBUG_DISPLAY and WP_DEBUG_LOG get core's defaults from wp_initial_constants() there.
 		if ( !defined('WP_DEBUG') )
-			define( 'WP_DEBUG', false );
-
-		// Add define('WP_DEBUG_DISPLAY', null); to wp-config.php use the globally configured setting for
-		// display_errors and not force errors to be displayed. Use false to force display_errors off.
-		if ( !defined('WP_DEBUG_DISPLAY') )
-			define( 'WP_DEBUG_DISPLAY', true );
-
-		// Add define('WP_DEBUG_LOG', true); to enable error logging to wp-content/debug.log.
-		if ( !defined('WP_DEBUG_LOG') )
-			define('WP_DEBUG_LOG', false);
+			define( 'WP_DEBUG', false ); // phpcs:ignore PluginCheck.CodeAnalysis.PHPErrorReporting.DefineWP_DEBUG -- Standalone bootstrap default; see the comment above.
 
 		if ( !defined('WP_CACHE') )
 			define('WP_CACHE', false);

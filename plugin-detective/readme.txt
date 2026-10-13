@@ -5,7 +5,7 @@ Tags:    troubleshoot, conflicts, debug, performance, site health
 Requires at least: 6.1
 Tested up to:      7.1
 Requires PHP:      5.3
-Stable tag:        1.2.36
+Stable tag:        1.2.37
 License:           GPLv2
 License URI:       http://www.gnu.org/licenses/gpl-2.0.html
 

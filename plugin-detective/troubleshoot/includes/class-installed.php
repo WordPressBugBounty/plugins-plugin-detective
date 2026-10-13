@@ -99,6 +99,8 @@ class PDT_Installed {
 		// Get the list of active plugins
 		$active  = get_option( 'active_plugins', array() );
 
+		// Icons come from the URLs core already received from the WordPress.org update API: Plugin Check forbids hardcoding WordPress.org asset hosts.
+		$updates = get_site_transient( 'update_plugins' );
 
 		// Premium plugins that have adopted the ManageWP API report new plugins by this filter
 		foreach ( (array) $plugins as $plugin_file => $plugin ) {
@@ -116,7 +118,7 @@ class PDT_Installed {
 				$plugins[$plugin_file]['slug'] = $plugin_names[0];
 			}
 			$plugin_slug = $plugins[$plugin_file]['slug'];
-			$plugins[$plugin_file]['icon'] = 'https://ps.w.org/'.$plugin_slug.'/assets/icon-256x256.png';
+			$plugins[$plugin_file]['icon'] = self::get_plugin_icon_url( $updates, $plugin_file );
 			$plugins[$plugin_slug] = $plugins[$plugin_file];
 			unset($plugins[$plugin_file]);
 			if ( is_array( $plugins[$plugin_slug] ) ) {
@@ -125,6 +127,38 @@ class PDT_Installed {
 		}
 
 		return $plugins;
+	}
+
+	/**
+	 * Pick an icon URL for a plugin from core's update data.
+	 *
+	 * @param  object|false $updates     The `update_plugins` site transient.
+	 * @param  string       $plugin_file Plugin file, e.g. 'akismet/akismet.php'.
+	 * @return string       Icon URL, or '' if none is available.
+	 */
+	private static function get_plugin_icon_url( $updates, $plugin_file ) {
+		if ( ! is_object( $updates ) ) {
+			return '';
+		}
+
+		$entry = null;
+		if ( isset( $updates->response ) && is_array( $updates->response ) && isset( $updates->response[ $plugin_file ] ) ) {
+			$entry = $updates->response[ $plugin_file ];
+		} elseif ( isset( $updates->no_update ) && is_array( $updates->no_update ) && isset( $updates->no_update[ $plugin_file ] ) ) {
+			$entry = $updates->no_update[ $plugin_file ];
+		}
+
+		if ( ! is_object( $entry ) || empty( $entry->icons ) || ! is_array( $entry->icons ) ) {
+			return '';
+		}
+
+		foreach ( array( '2x', '1x', 'svg' ) as $size ) {
+			if ( ! empty( $entry->icons[ $size ] ) ) {
+				return esc_url_raw( $entry->icons[ $size ] );
+			}
+		}
+
+		return '';
 	}
 
 	public function get_themes( $params=array() ) {
