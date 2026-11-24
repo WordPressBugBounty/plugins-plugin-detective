@@ -3,7 +3,7 @@
  * Plugin Name: Plugin Detective - Troubleshooting Conflicts
  * Plugin URI:  https://nsquared.io
  * Description: Quickly troubleshoot & fix plugin conflicts
- * Version:     1.2.38
+ * Version:     1.2.39
  * Author:      NSquared
  * Donate link: https://nsquared.io
  * License:     GPLv2
@@ -13,7 +13,7 @@
  * @link    https://nsquared.io
  *
  * @package Plugin_Detective
- * @version 1.2.38
+ * @version 1.2.39
  *
  * Built using generator-plugin-wp (https://github.com/WebDevStudios/generator-plugin-wp)
  */
@@ -73,7 +73,7 @@ final class Plugin_Detective {
 	 * @var    string
 	 * @since  0.0.0
 	 */
-	const VERSION = '1.2.38';
+	const VERSION = '1.2.39';
 
 	/**
 	 * wp admin instance class
